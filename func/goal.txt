@@ -1,0 +1,103 @@
+Create a small educational C++ project using Eigen that trains a simple neural network to fit scalar functions on an interval.
+
+Goal:
+Build a minimal neural network from scratch for function approximation, not classification.
+
+Use case:
+Approximate functions such as:
+- f(x) = erf(x)
+- f(x) = cos(x)
+- f(x) = sin(x)
+- f(x) = exp(-x*x)
+- f(x) = x*x
+
+Architecture:
+- Input size: 1
+- Hidden layer 1: configurable, default 16 neurons
+- Hidden layer 2: configurable, default 16 neurons
+- Output size: 1
+- Hidden activation: ReLU
+- Output activation: linear
+- Loss: mean squared error
+
+Use Eigen for all matrix/vector math.
+
+Important:
+This is for learning backpropagation, so keep the implementation explicit and easy to inspect. Do not use a machine-learning framework.
+
+Implement:
+1. A NeuralNetwork class with:
+   - constructor
+   - forward(x)
+   - backward(x, y)
+   - zeroGradients()
+   - updateParameters(learningRate, batchSize)
+   - predict(x)
+   - computeLoss(yHat, y)
+
+2. Cache forward-pass values:
+   - a0
+   - z1, a1
+   - z2, a2
+   - z3, a3
+
+3. Use backprop equations:
+   - delta3 = a3 - y
+   - dW3 += delta3 * a2.transpose()
+   - db3 += delta3
+   - delta2 = (W3.transpose() * delta3).cwiseProduct(ReLUPrime(z2))
+   - dW2 += delta2 * a1.transpose()
+   - db2 += delta2
+   - delta1 = (W2.transpose() * delta2).cwiseProduct(ReLUPrime(z1))
+   - dW1 += delta1 * a0.transpose()
+   - db1 += delta1
+
+4. Use He initialization for ReLU:
+   - W1 ~ N(0, sqrt(2/inputSize))
+   - W2 ~ N(0, sqrt(2/hiddenSize))
+   - W3 ~ N(0, sqrt(2/hiddenSize))
+
+5. Train using mini-batch SGD:
+   - randomly sample x from [xmin, xmax]
+   - compute y = targetFunction(x)
+   - accumulate gradients
+   - update after each batch
+
+6. Include several selectable target functions:
+   - erf
+   - cos
+   - sin
+   - gaussian
+   - square
+   - tanh
+
+7. Write CSV output after training:
+   - x,true_y,predicted_y,error
+   for many evenly spaced points over the interval.
+
+8. Keep code split into:
+   - neural_network.h
+   - neural_network.cpp
+   - functions.h
+   - main.cpp
+   - CMakeLists.txt
+
+9. main.cpp should:
+   - choose a function by name from command-line arguments
+   - choose interval xmin/xmax
+   - train for configurable epochs
+   - print average loss periodically
+   - write predictions.csv
+
+Suggested defaults:
+- function: erf
+- interval: [-3, 3]
+- hidden size: 16
+- epochs: 5000
+- batch size: 32
+- learning rate: 0.01
+- samples per epoch: 1024
+
+Use double precision.
+
+Keep the code simple, readable, and heavily commented around the backpropagation math.
