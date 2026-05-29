@@ -1,0 +1,108 @@
+I want to build a simple educational neural network from scratch in C++ using Eigen.
+
+Goal:
+Implement an MNIST digit classifier similar to the 3Blue1Brown neural network example.
+
+Architecture:
+- Input layer: 784 values, flattened 28x28 grayscale MNIST image
+- Hidden layer 1: 16 neurons, ReLU activation
+- Hidden layer 2: 16 neurons, ReLU activation
+- Output layer: 10 neurons
+- Output activation: softmax
+- Loss: cross entropy
+- Training: mini-batch stochastic gradient descent
+
+Use Eigen for all matrix/vector math.
+
+Please implement this cleanly and explicitly, without using a machine learning framework.
+
+Important design goals:
+- Educational clarity over maximum performance
+- Explicit forward pass
+- Explicit backpropagation
+- Cache intermediate z and a values needed for backprop
+- Accumulate gradients over a mini-batch
+- Zero gradients before each mini-batch
+- Update weights and biases using SGD
+- Include careful comments explaining the calculus/backprop steps
+
+Use these conventions:
+- a0 is the input vector, shape 784
+- z1 = W1 * a0 + b1, shape 16
+- a1 = ReLU(z1), shape 16
+- z2 = W2 * a1 + b2, shape 16
+- a2 = ReLU(z2), shape 16
+- z3 = W3 * a2 + b3, shape 10
+- a3 = softmax(z3), shape 10
+- y is the one-hot target vector, shape 10
+- loss = -sum_i y_i * log(a3_i)
+
+Backprop equations:
+- delta3 = a3 - y
+- dW3 += delta3 * a2.transpose()
+- db3 += delta3
+- delta2 = (W3.transpose() * delta3).cwiseProduct(ReLUPrime(z2))
+- dW2 += delta2 * a1.transpose()
+- db2 += delta2
+- delta1 = (W2.transpose() * delta2).cwiseProduct(ReLUPrime(z1))
+- dW1 += delta1 * a0.transpose()
+- db1 += delta1
+
+Shapes:
+- W1: 16 x 784
+- b1: 16
+- W2: 16 x 16
+- b2: 16
+- W3: 10 x 16
+- b3: 10
+
+Implementation requests:
+1. Create a small NeuralNetwork class.
+2. Include methods:
+   - constructor with random initialization
+   - forward(input)
+   - backward(input, target)
+   - zeroGradients()
+   - updateParameters(learningRate, batchSize)
+   - predict(input)
+   - computeLoss(output, target)
+3. Use numerically stable softmax by subtracting max(z3) before exponentiating.
+4. Clamp softmax outputs or add epsilon in log to avoid log(0).
+5. Initialize weights using He initialization for ReLU:
+   - W1 ~ N(0, sqrt(2/784))
+   - W2 ~ N(0, sqrt(2/16))
+   - W3 ~ N(0, sqrt(2/16))
+6. Biases can be initialized to zero.
+7. Use double precision initially for clarity.
+8. Add assertions or comments for matrix dimensions.
+9. Do not use templates at first; keep the implementation easy to read.
+10. Provide CMakeLists.txt using Eigen.
+11. Include a simple main.cpp that:
+    - loads MNIST data if available
+    - otherwise demonstrates training on a tiny synthetic sample
+    - prints loss and accuracy per epoch
+
+Please split the code into:
+- neural_network.h
+- neural_network.cpp
+- mnist_loader.h
+- mnist_loader.cpp
+- main.cpp
+- CMakeLists.txt
+
+For the MNIST loader:
+- Implement reading the original IDX file format:
+  - train-images-idx3-ubyte
+  - train-labels-idx1-ubyte
+  - t10k-images-idx3-ubyte
+  - t10k-labels-idx1-ubyte
+- Normalize pixel values to [0,1].
+- Convert labels to one-hot Eigen::VectorXd of size 10.
+- Handle big-endian integer parsing correctly.
+- Add error handling for missing files.
+
+Keep the first implementation minimal, correct, and easy to inspect.
+
+Do not hide the math behind helper abstractions.
+
+Keep forward pass and backpropagation equations explicit and visible in the source code so that I can trace every matrix shape and derivative.

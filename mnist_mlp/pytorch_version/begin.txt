@@ -1,0 +1,36 @@
+Write a complete, minimal PyTorch program that trains a simple neural network on the MNIST dataset.
+
+Requirements:
+
+- Use Python and PyTorch
+- Automatically download MNIST using torchvision
+- Use a simple fully connected network with architecture:
+    - Flatten input (28x28 → 784)
+    - Linear(784 → 128)
+    - ReLU
+    - Linear(128 → 10)
+- Do NOT use convolutional layers
+
+Training setup:
+- Loss: CrossEntropyLoss
+- Optimizer: Adam (lr=1e-3)
+- Batch size: 64
+- Train for ~5 epochs
+
+Code requirements:
+- Include all imports
+- Define a clear model class (nn.Module)
+- Use DataLoader for training and test sets
+- Implement a standard training loop
+- Compute and print:
+    - training loss per epoch
+    - test accuracy after each epoch
+
+Keep the code simple and readable:
+- No unnecessary abstractions
+- No external dependencies beyond torch + torchvision
+- No GPU required (but allow optional CUDA if available)
+
+Output:
+- A single runnable Python script
+- Comments explaining each major step (data loading, model, training, evaluation)
