@@ -3,10 +3,26 @@
 
 #include <Eigen/Dense>
 #include <random>
+#include <string>
+#include <vector>
+
+
+enum class Activation {
+    Relu,
+    Tanh,
+    Sigmoid
+};
+
+std::vector<std::string> availableActivationNames();
+Activation activationFromName(const std::string& name);
+std::string activationName(Activation activation);
 
 class NeuralNetwork {
 public:
-    explicit NeuralNetwork(int hiddenSize = 16, unsigned int seed = 42);
+    explicit NeuralNetwork(
+        int hiddenSize = 16,
+        Activation activation = Activation::Relu,
+        unsigned int seed = 42);
 
     Eigen::VectorXd forward(const Eigen::VectorXd& x);
     void backward(const Eigen::VectorXd& x, const Eigen::VectorXd& y);
@@ -20,6 +36,7 @@ private:
     int inputSize_;
     int hiddenSize_;
     int outputSize_;
+    Activation activation_;
 
     Eigen::MatrixXd W1_;
     Eigen::MatrixXd W2_;
@@ -47,9 +64,9 @@ private:
 
     std::mt19937 rng_;
 
-    Eigen::MatrixXd heMatrix(int rows, int cols, double fanIn);
-    Eigen::VectorXd relu(const Eigen::VectorXd& z) const;
-    Eigen::VectorXd reluPrime(const Eigen::VectorXd& z) const;
+    Eigen::MatrixXd initializedMatrix(int rows, int cols, double fanIn);
+    Eigen::VectorXd activate(const Eigen::VectorXd& z) const;
+    Eigen::VectorXd activationPrime(const Eigen::VectorXd& z) const;
 };
 
 #endif

@@ -24,12 +24,13 @@ struct Config {
     double learningRate = 0.01;
     int samplesPerEpoch = 1024;
     int csvPoints = 401;
+    std::string activationName = "relu";
 };
 
 void printUsage(const char* programName) {
     std::cerr
         << "Usage: " << programName << " [function] [xmin] [xmax] [epochs] "
-        << "[hidden_size] [batch_size] [learning_rate] [samples_per_epoch]\n"
+        << "[hidden_size] [batch_size] [learning_rate] [samples_per_epoch] [activation]\n"
         << "\nFunctions: ";
 
     const auto names = availableFunctionNames();
@@ -37,8 +38,15 @@ void printUsage(const char* programName) {
         std::cerr << names[i] << (i + 1 == names.size() ? "\n" : ", ");
     }
 
+    std::cerr << "\nActivations: ";
+
+    const auto activations = availableActivationNames();
+    for (std::size_t i = 0; i < activations.size(); ++i) {
+        std::cerr << activations[i] << (i + 1 == activations.size() ? "\n" : ", ");
+    }
+
     std::cerr
-        << "\nDefaults: erf -3 3 5000 16 32 0.01 1024\n"
+        << "\nDefaults: erf -3 3 5000 16 32 0.01 1024 relu\n"
         << "Output: predictions.csv\n";
 }
 
@@ -73,6 +81,9 @@ Config parseArgs(int argc, char** argv) {
     }
     if (argc > 8) {
         config.samplesPerEpoch = std::stoi(argv[8]);
+    }
+    if (argc > 9) {
+        config.activationName = argv[9];
     }
 
     if (config.xmax <= config.xmin) {
@@ -116,8 +127,9 @@ int main(int argc, char** argv) {
     try {
         const Config config = parseArgs(argc, argv);
         const TargetFunction target = getTargetFunction(config.functionName);
+        const Activation activation = activationFromName(config.activationName);
 
-        NeuralNetwork network(config.hiddenSize);
+        NeuralNetwork network(config.hiddenSize, activation);
         std::mt19937 rng(123);
         std::uniform_real_distribution<double> xDistribution(config.xmin, config.xmax);
 
@@ -131,7 +143,8 @@ int main(int argc, char** argv) {
                   << ", epochs=" << config.epochs
                   << ", batch_size=" << config.batchSize
                   << ", learning_rate=" << config.learningRate
-                  << ", samples_per_epoch=" << config.samplesPerEpoch << "\n";
+                  << ", samples_per_epoch=" << config.samplesPerEpoch
+                  << ", activation=" << activationName(activation) << "\n";
 
         for (int epoch = 1; epoch <= config.epochs; ++epoch) {
             double epochLoss = 0.0;

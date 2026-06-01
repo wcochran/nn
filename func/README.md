@@ -10,7 +10,7 @@ The network is a simple regression model:
 - hidden layer 1: configurable, default 16 neurons
 - hidden layer 2: configurable, default 16 neurons
 - output size: 1
-- hidden activation: ReLU
+- hidden activation: configurable, default ReLU
 - output activation: linear
 - loss: mean squared error
 - optimizer: mini-batch stochastic gradient descent
@@ -54,19 +54,31 @@ learning rate 0.01, hidden size 16, and 1024 sampled points per epoch.
 Arguments:
 
 ```text
-./build/function_approximator [function] [xmin] [xmax] [epochs] [hidden_size] [batch_size] [learning_rate] [samples_per_epoch]
+./build/function_approximator [function] [xmin] [xmax] [epochs] [hidden_size] [batch_size] [learning_rate] [samples_per_epoch] [activation]
 ```
 
 Available functions:
 
 ```text
-erf cos sin gaussian square tanh
+erf cos sin sin5 gaussian square tanh
+```
+
+Available hidden activations:
+
+```text
+relu tanh sigmoid
 ```
 
 Example:
 
 ```bash
 ./build/function_approximator erf -3 3 5000 32 32 0.005 4096
+```
+
+Example using tanh hidden activations:
+
+```bash
+./build/function_approximator erf -3 3 5000 32 32 0.005 4096 tanh
 ```
 
 Training writes `predictions.csv` with:

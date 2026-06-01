@@ -13,7 +13,7 @@ struct TargetFunction {
 };
 
 inline std::vector<std::string> availableFunctionNames() {
-    return {"erf", "cos", "sin", "gaussian", "square", "tanh"};
+    return {"erf", "cos", "sin", "sin5", "gaussian", "square", "tanh"};
 }
 
 inline TargetFunction getTargetFunction(const std::string& name) {
@@ -25,6 +25,9 @@ inline TargetFunction getTargetFunction(const std::string& name) {
     }
     if (name == "sin") {
         return {name, [](double x) { return std::sin(x); }};
+    }
+    if (name == "sin5") {
+        return {name, [](double x) { return std::sin(5.0 * x); }};
     }
     if (name == "gaussian") {
         return {name, [](double x) { return std::exp(-x * x); }};
